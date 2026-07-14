@@ -1,260 +1,108 @@
-# Multi-Agent-AI-App
-Multi-Agents AI System building from Scratch in python without any dependency of frameworks! 🤖 
-This Python-based app leverages OpenAI's GPT-4o model with a simple Streamlit web interface to tackle specialized tasks to create agentic systems without using orchestration frameworks like Crew AI or LangGraph. 🎉
+# Multi-Agent AI Research Workspace
 
-![ Multi Agent AI App](logo.png)
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Agents](#agents)
-  - [Main Agents](#main-agents)
-  - [Validator Agents](#validator-agents)
-- [Logging](#logging)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
-
-## Overview
-
-The **Multi-Agents AI System from Scratch** is a Python-based application leveraging OpenAI's GPT-4o model to perform specialized tasks through a collaborative multi-agent architecture. Built with Streamlit for an intuitive web interface without any Agents frameworks/libraries, this system includes agents for summarizing medical texts, writing research articles, and sanitizing medical data (Protected Health Information - PHI). Each primary agent is paired with a corresponding validator agent to ensure the quality and accuracy of the outputs. Built it for beginners so they can understand that Agents can be built without orchestration frameworks like Crew AI, AutoGen, LangGraph, etc.
+A collaborative multi-agent AI system built with Streamlit that uses specialized AI agents for academic research tasks — writing, summarization, and data sanitization — with real-time pipeline visualization and validation.
 
 ## Features
 
-- **Summarize Medical Texts:** Generate concise summaries of lengthy medical documents.
-- **Write Research Articles:** Create detailed research articles based on a given topic and optional outline.
-- **Sanitize Medical Data (PHI):** Remove sensitive health information from medical datasets.
-- **Quality Validation:** Each primary task is accompanied by a validator agent to assess and ensure output quality.
-- **Robust Logging:** Comprehensive logging for monitoring and debugging purposes.
-- **User-Friendly Interface:** Streamlit-based web app for easy interaction and task management.
+- **Multi-Agent Pipeline** — Specialized agents collaborate sequentially: Writer → Refiner → Validator
+- **Animated SVG Pipeline** — Real-time visualization showing agent status with pulsing active nodes and flowing connectors
+- **Thinking Cards** — Animated processing indicators that reveal results with slide-in transitions
+- **Glassmorphism UI** — Frosted glass cards with subtle gradient highlights
+- **Live Console Log** — Timestamped terminal-style activity log
+- **Validation Scoring** — Automatic score extraction with color-coded badges
+- **Performance Metrics** — Time per agent, total processing time, output size
+- **Export & Copy** — Download results as `.txt` or `.md`, copy to clipboard
 
-## Architecture
+## Tasks
+
+| Task | Agents Used | Description |
+|------|-------------|-------------|
+| **Write & Refine Article** | Writer → Refiner → Validator | Generates a research article, refines it, and validates quality |
+| **Summarize Medical Text** | Summarizer → Validator | Summarizes medical text and validates accuracy |
+| **Sanitize Medical Data** | Sanitizer → Validator | Removes Protected Health Information (PHI) and verifies removal |
+
+## Tech Stack
+
+- **Frontend**: Streamlit with custom CSS (glassmorphism, SVG animations)
+- **AI Model**: Llama 3.3 70B via [Groq](https://groq.com) (free tier, fast inference)
+- **Language**: Python 3.10+
+- **Architecture**: Abstract base agent pattern with pluggable tool/validator agents
+
+## Project Structure
 
 ```
-+-------------------+
-|       User        |
-+---------+---------+
-          |
-          | Interacts via
-          v
-+---------+---------+
-|    Streamlit App  |
-+---------+---------+
-          |
-          | Sends task requests to
-          v
-+---------+---------+
-|  Agent Manager    |
-+---------+---------+
-          |
-          +---------------------------------------------+
-          |                      |                      |
-          v                      v                      v
-+---------+---------+  +---------+---------+  +---------+---------+
-|  Summarize Agent  |  |  Write Article    |  |  Sanitize Data    |
-|  (Generates summary)| |  (Generates draft)| |  (Removes PHI)    |
-+---------+---------+  +---------+---------+  +---------+---------+
-          |                      |                      |
-          v                      v                      v
-+---------+---------+  +---------+---------+  +---------+---------+
-|Summarize Validator|  | Refiner Agent      |  |Sanitize Validator |
-|      Agent        |  |  (Enhances draft)  |  |      Agent        |
-+---------+---------+  +---------+----------+ +----------+--------+
-          |                      |                      |
-          |                      |                      |
-          +-----------+----------+-----------+----------+
-                      |                      |
-                      v                      v
-                +-----+-------+        +-----+-------+
-                |   Logger    |        |   Logger    |
-                +-------------+        +-------------+
+Multi-Agent-AI-App/
+├── app.py                      # Main Streamlit app with UI & visualization
+├── agents/
+│   ├── __init__.py             # AgentManager — registry of all agents
+│   ├── agent_base.py           # Base class with Groq API integration
+│   ├── write_article_tool.py   # Article drafting agent
+│   ├── refiner_agent.py        # Article refinement agent
+│   ├── validator_agent.py      # Article validation agent
+│   ├── summarize_tool.py       # Text summarization agent
+│   ├── summarize_validator_agent.py
+│   ├── sanitize_data_tool.py   # PHI removal agent
+│   ├── sanitize_data_validator_agent.py
+│   └── write_article_validator_agent.py
+├── utils/
+│   └── logger.py               # Logging configuration
+├── requirements.txt
+└── .env                        # API key (not tracked in git)
 ```
 
-### Components Breakdown
+## Setup
 
-1. **User**
-   - Interacts with the system via the Streamlit web interface.
-   - Selects tasks and provides input data.
+### 1. Clone the repository
 
-2. **Streamlit App**
-   - Frontend interface for user interaction.
-   - Sends user requests to the Agent Manager.
-   - Displays results and validation feedback.
+```bash
+git clone https://github.com/Ayush20-lex/Multi-agent-ai.git
+cd Multi-agent-ai
+```
 
-3. **Agent Manager**
-   - Central coordinator for all agents.
-   - Delegates tasks to appropriate main and validator agents.
+### 2. Create a virtual environment
 
-4. **Main Agents**
-   - **Summarize Agent:** Generates summaries of medical texts.
-   - **Write Article Agent:** Creates drafts of research articles.
-   - **Sanitize Data Agent:** Removes PHI from medical data.
+```bash
+python -m venv venv
 
-5. **Validator Agents**
-   - **Summarize Validator Agent:** Assesses the quality of summaries.
-   - **Refiner Agent:** Enhances drafts for better quality.
-   - **Sanitize Validator Agent:** Ensures all PHI has been removed.
+# Windows
+.\venv\Scripts\Activate.ps1
 
-6. **Logger**
-   - Records all interactions, inputs, outputs, and errors.
-   - Facilitates monitoring and debugging.
+# Mac/Linux
+source venv/bin/activate
+```
 
-## Installation
+### 3. Install dependencies
 
-### Prerequisites
+```bash
+pip install -r requirements.txt
+```
 
-- **Python 3.8 or higher**: [Download Python](https://www.python.org/downloads/)
-- **OpenAI API Access**: [Sign up for OpenAI's API](https://platform.openai.com/signup)
+### 4. Set up your API key
 
-### Steps
+Get a free API key from [console.groq.com/keys](https://console.groq.com/keys), then create a `.env` file:
 
-1. **Clone the Repository**
+```
+GROQ_API_KEY = "your_api_key_here"
+```
 
-   ```bash
-   git clone https://github.com/GURPREETKAURJETHRA/Multi-Agent-AI-App.git
-   cd Multi-Agent-AI-App
-   ```
+### 5. Run the app
 
-2. **Create a Virtual Environment**
+```bash
+streamlit run app.py
+```
 
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+The app will open at `http://localhost:8501`
 
-3. **Install Dependencies**
+## Deployment
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+This app is deployed on **Streamlit Community Cloud**:
 
-4. **Set Up Environment Variables**
+1. Push to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Connect your repo → set `app.py` as the main file
+4. Add your `GROQ_API_KEY` under **Secrets**
+5. Deploy
 
-   Create a `.env` file in the project root:
+## License
 
-   ```dotenv
-   OPENAI_API_KEY=your-api-key-here
-   ```
-
-   Alternatively, set the environment variable directly:
-
-   - **Unix/MacOS:**
-
-     ```bash
-     export OPENAI_API_KEY='your-api-key-here'
-     ```
-
-   - **Windows:**
-
-     ```bash
-     set OPENAI_API_KEY=your-api-key-here
-     ```
-
-## Usage
-
-1. **Activate the Virtual Environment**
-
-   ```bash
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-2. **Run the Streamlit App**
-
-   ```bash
-   streamlit run app.py
-   ```
-
-3. **Access the App**
-
-   Open the URL provided by Streamlit (usually `http://localhost:8501`) in your web browser.
-
-4. **Interact with the Tasks**
-
-   - **Summarize Medical Text:** Input medical texts to receive concise summaries.
-   - **Write and Refine Research Article:** Provide a topic and optional outline to generate and refine research articles.
-   - **Sanitize Medical Data (PHI):** Input medical data to remove sensitive information.
-
-## Agents
-
-### Main Agents
-
-- **Summarize Agent**
-  - **Function:** Generates summaries of provided medical texts.
-  - **Usage:** Input the text, and receive a concise summary.
-
-- **Write Article Agent**
-  - **Function:** Creates drafts of research articles based on a topic and optional outline.
-  - **Usage:** Provide a topic and outline to generate an initial draft.
-
-- **Sanitize Data Agent**
-  - **Function:** Removes Protected Health Information (PHI) from medical data.
-  - **Usage:** Input medical data containing PHI to receive sanitized data.
-
-### Validator Agents
-
-- **Summarize Validator Agent**
-  - **Function:** Validates the accuracy and quality of summaries.
-  - **Usage:** Receives the original text and its summary to assess quality.
-
-- **Refiner Agent**
-  - **Function:** Enhances and refines research article drafts for better clarity and coherence.
-  - **Usage:** Receives a draft article and returns an enhanced version.
-
-- **Sanitize Validator Agent**
-  - **Function:** Ensures that all PHI has been removed from sanitized data.
-  - **Usage:** Receives original and sanitized data to verify PHI removal.
-
-## Logging
-
-- **Location:** Logs are stored in the `logs/` directory.
-- **Files:**
-  - `multi_agent_system.log`: Contains detailed logs for monitoring and debugging.
-- **Configuration:** Logging is handled using the `loguru` library, configured in `utils/logger.py`.
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. **Fork the Repository**
-2. **Create a Feature Branch**
-
-   ```bash
-   git checkout -b feature/YourFeature
-   ```
-
-3. **Commit Your Changes**
-
-   ```bash
-   git commit -m "Add your feature"
-   ```
-
-4. **Push to the Branch**
-
-   ```bash
-   git push origin feature/YourFeature
-   ```
-
-5. **Open a Pull Request**
-   
-
-## Acknowledgements
-
-- [OpenAI](https://openai.com/) for providing the GPT-4 model.
-- [Streamlit](https://streamlit.io/) for the web application framework.
-- [Loguru](https://github.com/Delgan/loguru) for the logging library.
-- Inspired by collaborative multi-agent system architectures and prompt engineering techniques like Chain-of-Thought (CoT) and ReAct.
-
-## ©️ License 🪪 
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
-#### **If you like this LLM Project do drop ⭐ to this repo**
-#### Follow me on [![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/gurpreetkaurjethra/) &nbsp; [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/GURPREETKAURJETHRA/)
-
----
+MIT
