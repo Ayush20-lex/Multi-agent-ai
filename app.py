@@ -619,30 +619,31 @@ def run_sanitize(mgr):
         draw_metrics(timings, len(str(clean)))
 
 
-# ─── Main ─────────────────────────────────────────────────────────────────────
+# ─── Main ─────────────────────────────────────────────────────────────────
 
 def main():
     st.set_page_config(page_title="Research AI Workspace", page_icon="◉", layout="wide")
     inject_styles()
     draw_header()
 
-    with st.sidebar:
-        st.markdown("#### Workspace")
-        task = st.radio("Select a task", ["Write Article", "Summarize Text", "Sanitize Data"], label_visibility="collapsed")
-        st.divider()
-        st.caption("Powered by Llama 3.3 70B via Groq")
-
     mgr = AgentManager(max_retries=3, verbose=True)
 
-    if task == "Summarize Text":
-        section("Summarize Medical Text")
-        run_summarize(mgr)
-    elif task == "Write Article":
+    tab1, tab2, tab3 = st.tabs(["✍️ Write Article", "📄 Summarize Text", "🛡️ Sanitize Data"])
+
+    with tab1:
         section("Write & Refine Research Article")
         run_write_article(mgr)
-    elif task == "Sanitize Data":
+
+    with tab2:
+        section("Summarize Medical Text")
+        run_summarize(mgr)
+
+    with tab3:
         section("Sanitize Medical Data — PHI Removal")
         run_sanitize(mgr)
+
+    st.divider()
+    st.caption("Powered by Llama 3.3 70B via Groq")
 
 
 if __name__ == "__main__":
