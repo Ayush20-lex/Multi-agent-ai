@@ -332,6 +332,7 @@ def draw_actions(text_content, filename="output"):
             data=str(text_content),
             file_name=f"{filename}.txt",
             mime="text/plain",
+            key=f"dl_txt_{filename}",
         )
     with col2:
         st.download_button(
@@ -339,9 +340,10 @@ def draw_actions(text_content, filename="output"):
             data=str(text_content),
             file_name=f"{filename}.md",
             mime="text/markdown",
+            key=f"dl_md_{filename}",
         )
     with col3:
-        with st.popover("📋 Copy to clipboard"):
+        with st.popover("📋 Copy to clipboard", key=f"copy_{filename}"):
             st.code(str(text_content), language=None)
 
 
@@ -365,9 +367,9 @@ def section(label):
 
 def run_summarize(mgr):
     steps = ["Input", "Summarize", "Validate"]
-    text = st.text_area("Paste medical text below", height=180, placeholder="Enter the medical text you want to summarize...")
+    text = st.text_area("Paste medical text below", height=180, placeholder="Enter the medical text you want to summarize...", key="summarize_input")
 
-    if st.button("Run", type="primary"):
+    if st.button("Run", type="primary", key="summarize_run"):
         if not text:
             st.warning("Please enter some text first.")
             return
@@ -440,10 +442,10 @@ def run_summarize(mgr):
 
 def run_write_article(mgr):
     steps = ["Input", "Draft", "Refine", "Validate"]
-    topic = st.text_input("Topic", placeholder="e.g. Impact of AI on drug discovery")
-    outline = st.text_area("Outline (optional)", height=120, placeholder="Optional structure or key points...")
+    topic = st.text_input("Topic", placeholder="e.g. Impact of AI on drug discovery", key="article_topic")
+    outline = st.text_area("Outline (optional)", height=120, placeholder="Optional structure or key points...", key="article_outline")
 
-    if st.button("Run", type="primary"):
+    if st.button("Run", type="primary", key="article_run"):
         if not topic:
             st.warning("Please enter a topic.")
             return
@@ -546,9 +548,9 @@ def run_write_article(mgr):
 
 def run_sanitize(mgr):
     steps = ["Input", "Sanitize", "Validate"]
-    data = st.text_area("Paste medical records below", height=180, placeholder="Enter medical data containing PHI...")
+    data = st.text_area("Paste medical records below", height=180, placeholder="Enter medical data containing PHI...", key="sanitize_input")
 
-    if st.button("Run", type="primary"):
+    if st.button("Run", type="primary", key="sanitize_run"):
         if not data:
             st.warning("Please enter data to sanitize.")
             return
