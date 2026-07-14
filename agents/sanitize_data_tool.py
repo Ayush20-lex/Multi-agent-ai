@@ -17,5 +17,5 @@ class SanitizeDataTool(AgentBase):
                 )
             }
         ]
-        sanitized_data = self.call_openai(messages, max_tokens=500)
+        sanitized_data = self.call_gemini(messages, max_tokens=500)
         return sanitized_data

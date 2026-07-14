@@ -33,7 +33,7 @@ class ValidatorAgent(AgentBase):
                 ]
             }
         ]
-        validation = self.call_openai(
+        validation = self.call_gemini(
             messages=messages,
             temperature=0.3,         # Lower temperature for more deterministic output
             max_tokens=500,

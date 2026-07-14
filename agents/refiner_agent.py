@@ -30,7 +30,7 @@ class RefinerAgent(AgentBase):
                 ]
             }
         ]
-        refined_article = self.call_openai(
+        refined_article = self.call_gemini(
             messages=messages,
             temperature=0.5,
             max_tokens=2048,

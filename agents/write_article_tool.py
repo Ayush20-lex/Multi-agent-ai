@@ -16,5 +16,5 @@ class WriteArticleTool(AgentBase):
             {"role": "system", "content": system_message},
             {"role": "user", "content": user_content}
         ]
-        article = self.call_openai(messages, max_tokens=1000)
+        article = self.call_gemini(messages, max_tokens=1000)
         return article

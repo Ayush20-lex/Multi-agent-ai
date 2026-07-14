@@ -19,5 +19,5 @@ class SanitizeDataValidatorAgent(AgentBase):
             {"role": "system", "content": system_message},
             {"role": "user", "content": user_content}
         ]
-        validation = self.call_openai(messages, max_tokens=512)
+        validation = self.call_gemini(messages, max_tokens=512)
         return validation

@@ -1,4 +1,4 @@
-openai
+groq
 streamlit
 pandas
 loguru

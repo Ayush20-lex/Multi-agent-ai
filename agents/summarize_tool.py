@@ -17,5 +17,5 @@ class SummarizeTool(AgentBase):
                 )
             }
         ]
-        summary = self.call_openai(messages, max_tokens=300)
+        summary = self.call_gemini(messages, max_tokens=300)
         return summary
